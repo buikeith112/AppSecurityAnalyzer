@@ -1,0 +1,10 @@
+{
+  "dependencies": {
+    "lodash": "3.10.1",
+    "axios": "latest",
+    "react": "^18.2.0"
+  },
+  "devDependencies": {
+    "eslint": "8.0.0"
+  }
+}
