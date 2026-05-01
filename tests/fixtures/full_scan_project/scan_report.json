@@ -1,0 +1,95 @@
+{
+  "project_path": "tests\\fixtures\\full_scan_project",
+  "total_files": 4,
+  "first_files": [
+    "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\app.py",
+    "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\package.json",
+    "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\requirements.txt",
+    "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\users.csv"
+  ],
+  "risk_score": 100,
+  "findings_by_category": {
+    "secrets": [
+      {
+        "category": "secrets",
+        "title": "OpenAI API Key",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\app.py",
+        "line_number": 5,
+        "detail": "Potential hardcoded secret detected.",
+        "evidence": "sk-a...3456"
+      }
+    ],
+    "dependencies": [
+      {
+        "category": "dependencies",
+        "title": "lodash",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\package.json",
+        "line_number": 3,
+        "detail": "Very old version detected; local heuristic expects at least 4.0.0.",
+        "evidence": "3.10.1"
+      },
+      {
+        "category": "dependencies",
+        "title": "requests",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\requirements.txt",
+        "line_number": 1,
+        "detail": "Very old version detected; local heuristic expects at least 2.20.0.",
+        "evidence": "==2.0.0"
+      },
+      {
+        "category": "dependencies",
+        "title": "flask",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\requirements.txt",
+        "line_number": 2,
+        "detail": "Missing version number.",
+        "evidence": "unversioned"
+      }
+    ],
+    "validation": [
+      {
+        "category": "validation",
+        "title": "login",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\app.py",
+        "line_number": 9,
+        "detail": "Function accepts input but no validation checks were found.",
+        "evidence": "route decorator; input parameters: request"
+      }
+    ],
+    "rate_limit": [
+      {
+        "category": "rate_limit",
+        "title": "ROUTE /login",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\app.py",
+        "line_number": 9,
+        "detail": "Route exists but no Flask-Limiter style protection was found.",
+        "evidence": "Python API"
+      }
+    ],
+    "sensitive_data": [
+      {
+        "category": "sensitive_data",
+        "title": "Email Address",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\users.csv",
+        "line_number": 2,
+        "detail": "Sensitive data pattern detected.",
+        "evidence": "a***e@example.com"
+      },
+      {
+        "category": "sensitive_data",
+        "title": "Social Security Number",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\users.csv",
+        "line_number": 2,
+        "detail": "Sensitive data pattern detected.",
+        "evidence": "***-**-6789"
+      },
+      {
+        "category": "sensitive_data",
+        "title": "Phone Number",
+        "file_name": "C:\\Users\\buike\\Downloads\\vibe_code_tester\\AppSecurityAnalyzer\\tests\\fixtures\\full_scan_project\\users.csv",
+        "line_number": 2,
+        "detail": "Sensitive data pattern detected.",
+        "evidence": "***-***-4567"
+      }
+    ]
+  }
+}
