@@ -32,6 +32,7 @@ The tool is intentionally heuristic-based. It does not call external APIs, uploa
   - Express `express-rate-limit` signals
 - Produces a single categorized report with a `0-100` risk score.
 - Supports optional JSON report export.
+- Optionally runs LLM analysis on a sampled set of source files to flag AI code smells.
 
 ## Installation
 
@@ -79,6 +80,54 @@ Export JSON:
 ai-code-risk-auditor examples/vulnerable_demo --json-report reports/scan_report.json
 ```
 
+Run optional LLM analysis on the top 5 source files:
+
+```bash
+ai-code-risk-auditor examples/vulnerable_demo --llm-analysis
+```
+
+Limit the sampled files:
+
+```bash
+ai-code-risk-auditor examples/vulnerable_demo --llm-analysis --llm-top-n 2
+```
+
+LLM providers are configured with environment variables. When no provider key is
+configured, the scanner uses an offline mock response so the command still works
+in local tests and CI.
+
+Use local Ollama:
+
+```bash
+LLM_PROVIDER=ollama LLM_MODEL=qwen2.5-coder:7b ai-code-risk-auditor examples/vulnerable_demo --llm-analysis
+```
+
+Use Gemini's hosted free tier:
+
+```bash
+LLM_PROVIDER=gemini GEMINI_API_KEY=<your-key> LLM_MODEL=gemini-2.5-flash-lite ai-code-risk-auditor examples/vulnerable_demo --llm-analysis
+```
+
+Use Groq's hosted free tier:
+
+```bash
+LLM_PROVIDER=groq GROQ_API_KEY=<your-key> LLM_MODEL=llama-3.1-8b-instant ai-code-risk-auditor examples/vulnerable_demo --llm-analysis
+```
+
+Use OpenRouter free models:
+
+```bash
+LLM_PROVIDER=openrouter OPENROUTER_API_KEY=<your-key> LLM_MODEL=openrouter/free ai-code-risk-auditor examples/vulnerable_demo --llm-analysis
+```
+
+`LLM_PROVIDER=auto` is the default. It picks Gemini, Groq, OpenRouter, or OpenAI
+when the matching API key is present, otherwise it uses the offline mock.
+
+For hosted websites such as Vercel, use Gemini, Groq, or OpenRouter. Ollama only
+works there if you run a separate reachable Ollama server and set
+`LLM_BASE_URL` to that server; Vercel cannot call the Ollama server running on
+your laptop via `localhost`.
+
 Run the included test scripts:
 
 ```bash
@@ -88,6 +137,7 @@ python tests/test_dependencies.py
 python tests/test_validation.py
 python tests/test_rate_limit.py
 python tests/test_sensitive_data.py
+python tests/test_llm_analysis.py
 python tests/test_report.py
 ```
 
@@ -143,6 +193,7 @@ scanner/
     secrets.py
     sensitive_data.py
     validation.py
+    llm_analysis.py
   utils/
     file_loader.py
     patterns.py

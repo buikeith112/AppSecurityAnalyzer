@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 from scanner.modules.dependencies import DependencyWarning
+from scanner.modules.llm_analysis import LLMFileAnalysis
 from scanner.modules.rate_limit import RateLimitFinding
 from scanner.modules.secrets import SecretFinding
 from scanner.modules.sensitive_data import SensitiveDataFinding
@@ -20,6 +21,7 @@ CATEGORY_WEIGHTS = {
     "validation": 10,
     "rate_limit": 8,
     "dependencies": 6,
+    "llm_analysis": 4,
 }
 
 
@@ -54,6 +56,7 @@ def build_report(
     validation_findings: list[ValidationFinding],
     rate_limit_findings: list[RateLimitFinding],
     sensitive_data_findings: list[SensitiveDataFinding],
+    llm_analyses: list[LLMFileAnalysis] | None = None,
 ) -> ScanReport:
     """Aggregate module outputs into one scored report."""
     findings_by_category = {
@@ -63,6 +66,8 @@ def build_report(
         "rate_limit": normalize_rate_limit_findings(rate_limit_findings),
         "sensitive_data": normalize_sensitive_data_findings(sensitive_data_findings),
     }
+    if llm_analyses is not None:
+        findings_by_category["llm_analysis"] = normalize_llm_analyses(llm_analyses)
 
     return ScanReport(
         project_path=str(project_path),
@@ -157,6 +162,9 @@ def format_first_files(first_files: list[str]) -> list[str]:
 
 def format_category_label(category: str) -> str:
     """Convert a category key into a display label."""
+    if category == "llm_analysis":
+        return "LLM Analysis"
+
     return category.replace("_", " ").title()
 
 
@@ -254,3 +262,23 @@ def normalize_sensitive_data_findings(
         )
         for finding in findings
     ]
+
+
+def normalize_llm_analyses(analyses: list[LLMFileAnalysis]) -> list[ReportFinding]:
+    """Normalize LLM analysis issues for the report."""
+    report_findings: list[ReportFinding] = []
+
+    for analysis in analyses:
+        for issue in analysis.issues:
+            report_findings.append(
+                ReportFinding(
+                    category="llm_analysis",
+                    title=issue.title,
+                    file_name=analysis.file,
+                    line_number=None,
+                    detail=f"Severity: {issue.severity}. {issue.explanation}",
+                    evidence="LLM analysis",
+                )
+            )
+
+    return report_findings
