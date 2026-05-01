@@ -8,6 +8,10 @@ from pathlib import Path
 from scanner.modules.dependencies import DependencyWarning, analyze_dependencies
 from scanner.modules.rate_limit import RateLimitFinding, analyze_rate_limits
 from scanner.modules.secrets import SecretFinding, detect_secrets
+from scanner.modules.sensitive_data import (
+    SensitiveDataFinding,
+    detect_sensitive_data,
+)
 from scanner.modules.validation import ValidationFinding, analyze_validation
 from scanner.utils.file_loader import load_text_files
 
@@ -32,6 +36,7 @@ def run(project_path: Path) -> int:
     dependency_warnings = analyze_dependencies(loaded_files)
     validation_findings = analyze_validation(loaded_files)
     rate_limit_findings = analyze_rate_limits(loaded_files)
+    sensitive_data_findings = detect_sensitive_data(loaded_files)
 
     print(f"Total files found: {len(loaded_files)}")
     print("First 5 files:")
@@ -43,6 +48,7 @@ def run(project_path: Path) -> int:
     print_dependency_warnings(dependency_warnings)
     print_validation_findings(validation_findings)
     print_rate_limit_findings(rate_limit_findings)
+    print_sensitive_data_findings(sensitive_data_findings)
 
     return 0
 
@@ -110,6 +116,20 @@ def print_rate_limit_findings(findings: list[RateLimitFinding]) -> None:
         print(
             f"- {finding.endpoint} in {finding.file_name}:"
             f"{finding.line_number} -> {finding.warning} ({finding.framework})"
+        )
+
+
+def print_sensitive_data_findings(findings: list[SensitiveDataFinding]) -> None:
+    """Print exposed sensitive data findings in a readable format."""
+    print(f"\nSensitive data findings: {len(findings)}")
+
+    if not findings:
+        return
+
+    for finding in findings:
+        print(
+            f"- {finding.data_type} in {finding.file_name}:"
+            f"{finding.line_number} -> {finding.matched_value}"
         )
 
 
