@@ -7,6 +7,7 @@ from pathlib import Path
 
 from scanner.modules.dependencies import DependencyWarning, analyze_dependencies
 from scanner.modules.secrets import SecretFinding, detect_secrets
+from scanner.modules.validation import ValidationFinding, analyze_validation
 from scanner.utils.file_loader import load_text_files
 
 
@@ -28,6 +29,7 @@ def run(project_path: Path) -> int:
     loaded_files = load_text_files(project_path)
     secret_findings = detect_secrets(loaded_files)
     dependency_warnings = analyze_dependencies(loaded_files)
+    validation_findings = analyze_validation(loaded_files)
 
     print(f"Total files found: {len(loaded_files)}")
     print("First 5 files:")
@@ -37,6 +39,7 @@ def run(project_path: Path) -> int:
 
     print_secret_findings(secret_findings)
     print_dependency_warnings(dependency_warnings)
+    print_validation_findings(validation_findings)
 
     return 0
 
@@ -77,6 +80,20 @@ def format_dependency_location(warning: DependencyWarning) -> str:
         return warning.file_name
 
     return f"{warning.file_name}:{warning.line_number}"
+
+
+def print_validation_findings(findings: list[ValidationFinding]) -> None:
+    """Print suspicious input validation findings in a readable format."""
+    print(f"\nValidation findings: {len(findings)}")
+
+    if not findings:
+        return
+
+    for finding in findings:
+        print(
+            f"- {finding.function_name} in {finding.file_name}:"
+            f"{finding.line_number} -> {finding.warning} ({finding.evidence})"
+        )
 
 
 def main() -> int:
