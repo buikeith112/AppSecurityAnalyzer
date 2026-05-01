@@ -7,11 +7,25 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi.responses import FileResponse
 
 from backend.scanner_integration import ScanError, scan_github_repo, scan_zip_archive
 
 
 app = FastAPI(title="AI Code Risk Auditor API")
+FRONTEND_PATH = Path(__file__).resolve().parents[1] / "frontend" / "index.html"
+
+
+@app.get("/")
+def index() -> FileResponse:
+    """Serve the simple scanner frontend."""
+    if not FRONTEND_PATH.exists():
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Frontend file is missing.",
+        )
+
+    return FileResponse(FRONTEND_PATH)
 
 
 @app.get("/health")

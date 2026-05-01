@@ -149,6 +149,12 @@ Start the FastAPI backend:
 uvicorn backend.app:app --reload
 ```
 
+Open the frontend:
+
+```text
+http://127.0.0.1:8000
+```
+
 Scan a GitHub repository URL:
 
 ```bash
@@ -234,6 +240,8 @@ main.py
 backend/
   app.py
   scanner_integration.py
+frontend/
+  index.html
 examples/
   vulnerable_demo/
 tests/
