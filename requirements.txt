@@ -1,0 +1,2 @@
+# Runtime dependencies
+# AI Code Risk Auditor currently uses only the Python standard library.
