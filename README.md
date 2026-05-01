@@ -141,6 +141,39 @@ python tests/test_llm_analysis.py
 python tests/test_report.py
 ```
 
+## Web Backend
+
+Start the FastAPI backend:
+
+```bash
+uvicorn backend.app:app --reload
+```
+
+Scan a GitHub repository URL:
+
+```bash
+curl -X POST http://127.0.0.1:8000/scan \
+  -F "repo_url=https://github.com/example/project" \
+  -F "llm_analysis=false"
+```
+
+Scan a zip upload:
+
+```bash
+curl -X POST http://127.0.0.1:8000/scan \
+  -F "zip_file=@project.zip" \
+  -F "llm_analysis=false"
+```
+
+Enable LLM analysis for the top two source files:
+
+```bash
+curl -X POST http://127.0.0.1:8000/scan \
+  -F "repo_url=https://github.com/example/project" \
+  -F "llm_analysis=true" \
+  -F "llm_top_n=2"
+```
+
 ## Example Output
 
 ```text
@@ -198,6 +231,9 @@ scanner/
     file_loader.py
     patterns.py
 main.py
+backend/
+  app.py
+  scanner_integration.py
 examples/
   vulnerable_demo/
 tests/

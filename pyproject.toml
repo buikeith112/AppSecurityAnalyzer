@@ -23,10 +23,15 @@ classifiers = [
   "Topic :: Security",
   "Topic :: Software Development :: Quality Assurance",
 ]
-dependencies = []
+dependencies = [
+  "fastapi>=0.95,<0.100",
+  "pydantic<2",
+  "python-multipart>=0.0.9",
+  "uvicorn>=0.30",
+]
 
 [project.scripts]
 ai-code-risk-auditor = "scanner.main:main"
 
 [tool.setuptools.packages.find]
-include = ["scanner*"]
+include = ["scanner*", "backend*"]
