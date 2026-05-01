@@ -6,6 +6,7 @@ import argparse
 from pathlib import Path
 
 from scanner.modules.dependencies import DependencyWarning, analyze_dependencies
+from scanner.modules.rate_limit import RateLimitFinding, analyze_rate_limits
 from scanner.modules.secrets import SecretFinding, detect_secrets
 from scanner.modules.validation import ValidationFinding, analyze_validation
 from scanner.utils.file_loader import load_text_files
@@ -30,6 +31,7 @@ def run(project_path: Path) -> int:
     secret_findings = detect_secrets(loaded_files)
     dependency_warnings = analyze_dependencies(loaded_files)
     validation_findings = analyze_validation(loaded_files)
+    rate_limit_findings = analyze_rate_limits(loaded_files)
 
     print(f"Total files found: {len(loaded_files)}")
     print("First 5 files:")
@@ -40,6 +42,7 @@ def run(project_path: Path) -> int:
     print_secret_findings(secret_findings)
     print_dependency_warnings(dependency_warnings)
     print_validation_findings(validation_findings)
+    print_rate_limit_findings(rate_limit_findings)
 
     return 0
 
@@ -93,6 +96,20 @@ def print_validation_findings(findings: list[ValidationFinding]) -> None:
         print(
             f"- {finding.function_name} in {finding.file_name}:"
             f"{finding.line_number} -> {finding.warning} ({finding.evidence})"
+        )
+
+
+def print_rate_limit_findings(findings: list[RateLimitFinding]) -> None:
+    """Print API endpoints that appear to be missing rate limiting."""
+    print(f"\nRate limit findings: {len(findings)}")
+
+    if not findings:
+        return
+
+    for finding in findings:
+        print(
+            f"- {finding.endpoint} in {finding.file_name}:"
+            f"{finding.line_number} -> {finding.warning} ({finding.framework})"
         )
 
 
