@@ -155,6 +155,8 @@ Open the frontend:
 http://127.0.0.1:8000
 ```
 
+Deployment instructions are in [DEPLOYMENT.md](DEPLOYMENT.md).
+
 Scan a GitHub repository URL:
 
 ```bash
@@ -239,9 +241,14 @@ scanner/
 main.py
 backend/
   app.py
+  start.py
   scanner_integration.py
 frontend/
+  build.mjs
+  config.js
   index.html
+  package.json
+  vercel.json
 examples/
   vulnerable_demo/
 tests/

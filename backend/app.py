@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Any
 
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, status
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from backend.scanner_integration import ScanError, scan_github_repo, scan_zip_archive
@@ -14,6 +16,21 @@ from backend.scanner_integration import ScanError, scan_github_repo, scan_zip_ar
 
 app = FastAPI(title="AI Code Risk Auditor API")
 FRONTEND_PATH = Path(__file__).resolve().parents[1] / "frontend" / "index.html"
+FRONTEND_CONFIG_PATH = Path(__file__).resolve().parents[1] / "frontend" / "config.js"
+FRONTEND_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("FRONTEND_ORIGINS", "").split(",")
+    if origin.strip()
+]
+
+if FRONTEND_ORIGINS:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=FRONTEND_ORIGINS,
+        allow_credentials=False,
+        allow_methods=["GET", "POST"],
+        allow_headers=["*"],
+    )
 
 
 @app.get("/")
@@ -26,6 +43,18 @@ def index() -> FileResponse:
         )
 
     return FileResponse(FRONTEND_PATH)
+
+
+@app.get("/config.js")
+def frontend_config() -> FileResponse:
+    """Serve frontend API configuration for local FastAPI hosting."""
+    if not FRONTEND_CONFIG_PATH.exists():
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Frontend config file is missing.",
+        )
+
+    return FileResponse(FRONTEND_CONFIG_PATH, media_type="application/javascript")
 
 
 @app.get("/health")
